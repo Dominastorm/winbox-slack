@@ -18,7 +18,7 @@ slack_event_adapter = SlackEventAdapter(os.environ['SLACK_SIGNING_SECRET'], "/sl
 client = WebClient(token=os.environ['SLACK_TOKEN'])
 
 # Handle member joining event
-@slack_event_adapter.on("member_joined_channel")
+@slack_event_adapter.on("team_join")
 def handle_message(payload):
     event = payload.get('event', {})
     user = event.get('user')
