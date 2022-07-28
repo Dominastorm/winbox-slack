@@ -10,11 +10,21 @@ env_path = Path('.') / '.env'
 load_dotenv(dotenv_path=env_path)
 
 app = Flask(__name__)
+
+# Create an event adapter to handle events
 slack_event_adapter = SlackEventAdapter(os.environ['SLACK_SIGNING_SECRET'], "/slack/events", app)
 
-slack_web_client = WebClient(token=os.environ['SLACK_TOKEN'])
+# Create a Slack client
+client = WebClient(token=os.environ['SLACK_TOKEN'])
 
-slack_web_client.chat_postMessage(channel='#test', text='Hello world!')
+# Handle member joining event
+@slack_event_adapter.on("member_joined_channel")
+def handle_message(payload):
+    event = payload.get('event', {})
+    user = event.get('user')
+
+    # Send a direct message to the user
+    client.chat_postMessage(channel=user, text="Thanks for choosing Winbox!\n You will receive your notifications here.")
 
 if __name__ == '__main__':
     app.run(debug=True)
